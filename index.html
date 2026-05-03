@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CLASSICAL KOMBAT</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎵</text></svg>">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=MedievalSharp&family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;900&display=swap');
 
@@ -657,7 +658,6 @@
 </head>
 <body>
 
-<!-- TITLE SCREEN -->
 <div id="title-screen" class="screen active">
   <div class="floating-notes" id="floating-notes"></div>
   <div class="title-content">
@@ -668,11 +668,10 @@
   </div>
 </div>
 
-<!-- SELECT SCREEN -->
 <div id="select-screen" class="screen">
   <div class="select-header">
     <h2>⚔ ESCOLHA SEU COMPOSITOR ⚔</h2>
-    <p class="select-instruction">J1: CLIQUE • J2: CLIQUE COM SHIFT</p>
+    <p class="select-instruction">ESCOLHA SEU MAESTRO (O OPONENTE SERÁ SORTEADO)</p>
   </div>
   <div class="fighters-grid" id="fighters-grid"></div>
   <div class="select-players">
@@ -690,7 +689,6 @@
   <button class="btn-fight" id="fight-btn" onclick="startFight()">⚔ LUTAR ⚔</button>
 </div>
 
-<!-- GAME SCREEN -->
 <div id="game-screen" class="screen">
   <img id="arena-bg" src="" alt="Arena">
   <div class="arena-overlay"></div>
@@ -750,7 +748,6 @@
   </div>
 </div>
 
-<!-- RESULT SCREEN -->
 <div id="result-screen" class="screen">
   <div class="result-bg">
     <img id="result-bg-img" src="" alt="" style="width:100%;height:100%;object-fit:cover;filter:brightness(0.15) sepia(0.5);">
@@ -928,7 +925,7 @@ function goToSelect() {
 function renderFighterGrid() {
   const grid = document.getElementById('fighters-grid');
   grid.innerHTML = '';
-  FIGHTERS.forEach((f, i) => {
+  FIGHTERS.forEach((f) => {
     const card = document.createElement('div');
     card.className = 'fighter-card';
     card.id = 'card-' + f.id;
@@ -937,30 +934,39 @@ function renderFighterGrid() {
       <div class="fighter-card-name">${f.name.toUpperCase()}</div>
       <div class="fighter-card-era">${f.era}</div>
     `;
-    card.onclick = (e) => selectFighter(f, e.shiftKey);
+    card.onclick = () => selectFighter(f);
     grid.appendChild(card);
   });
 }
 
-function selectFighter(fighter, isP2 = false) {
-  if (!isP2) {
-    // P1
-    if (p1Fighter) document.getElementById('card-' + p1Fighter.id)?.classList.remove('p1-selected');
-    p1Fighter = fighter;
-    document.getElementById('card-' + fighter.id).classList.add('p1-selected');
-    document.getElementById('p1-portrait').src = fighter.portrait;
-    document.getElementById('p1-name').textContent = fighter.name;
-  } else {
-    // P2
-    if (p2Fighter) document.getElementById('card-' + p2Fighter.id)?.classList.remove('p2-selected');
-    p2Fighter = fighter;
-    document.getElementById('card-' + fighter.id).classList.add('p2-selected');
-    document.getElementById('p2-portrait').src = fighter.portrait;
-    document.getElementById('p2-name').textContent = fighter.name;
+function selectFighter(fighter) {
+  // Limpar seleção do P1 caso tenha mudado
+  if (p1Fighter) {
+    document.getElementById('card-' + p1Fighter.id)?.classList.remove('p1-selected');
   }
-  if (p1Fighter && p2Fighter) {
-    document.getElementById('fight-btn').classList.add('ready');
+  
+  // Setar Jogador 1
+  p1Fighter = fighter;
+  document.getElementById('card-' + fighter.id).classList.add('p1-selected');
+  document.getElementById('p1-portrait').src = fighter.portrait;
+  document.getElementById('p1-name').textContent = fighter.name;
+
+  // Limpar seleção anterior do P2 visualmente (se houver)
+  if (p2Fighter) {
+    document.getElementById('card-' + p2Fighter.id)?.classList.remove('p2-selected');
   }
+
+  // Sorteio Automático para o Jogador 2 (Oponente)
+  const opponents = FIGHTERS.filter(f => f.id !== fighter.id); // Evita espelho automático, se preferir
+  const randomOpponent = opponents[Math.floor(Math.random() * opponents.length)];
+  
+  p2Fighter = randomOpponent;
+  document.getElementById('card-' + p2Fighter.id).classList.add('p2-selected');
+  document.getElementById('p2-portrait').src = p2Fighter.portrait;
+  document.getElementById('p2-name').textContent = p2Fighter.name;
+
+  // Botão de luta pronto
+  document.getElementById('fight-btn').classList.add('ready');
 }
 
 // ========================
