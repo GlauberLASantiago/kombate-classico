@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CLASSICAL KOMBAT</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=MedievalSharp&family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;900&display=swap');
+
+  :root {
+    --gold: #FFD700;
+    --dark-gold: #B8860B;
+    --blood: #8B0000;
+    --crimson: #DC143C;
+    --parchment: #F5E6C8;
+    --dark: #0a0005;
+    --purple: #2a0040;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Cinzel', serif;
+    background: #000;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Ctext y='20' font-size='20'%3E🎵%3C/text%3E%3C/svg%3E"), auto;
+  }
+
+  /* ======= SCREENS ======= */
+  .screen { position: absolute; inset: 0; display: none; }
+  .screen.active { display: flex; }
+
+  /* ======= TITLE SCREEN ======= */
+  #title-screen {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #000;
+    position: relative;
+    overflow: hidden;
+  }
+
+  #title-screen::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url('https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/PNG_transparency_demonstration_1.png/280px-PNG_transparency_demonstration_1.png') center/cover;
+    background-image: url('https://images.unsplash.com/photo-1507838153414-b4b713384a76?w=1600&q=80');
+    filter: brightness(0.25) sepia(0.5);
+    z-index: 0;
+  }
+
+  #title-screen::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, transparent 30%, #000 100%);
+    z-index: 1;
+  }
+
+  .title-content { position: relative; z-index: 2; text-align: center; }
+
+  .title-subtitle {
+    font-family: 'Cinzel', serif;
+    color: var(--gold);
+    font-size: 1rem;
+    letter-spacing: 0.8em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    opacity: 0.8;
+  }
+
+  .title-main {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(3rem, 8vw, 6rem);
+    font-weight: 900;
+    color: var(--gold);
+    text-shadow: 0 0 30px rgba(255,215,0,0.8), 0 0 60px rgba(255,215,0,0.4), 4px 4px 0 var(--blood);
+    letter-spacing: 0.1em;
+    line-height: 1;
+    animation: titlePulse 2s ease-in-out infinite;
+  }
+
+  @keyframes titlePulse {
+    0%, 100% { text-shadow: 0 0 30px rgba(255,215,0,0.8), 0 0 60px rgba(255,215,0,0.4), 4px 4px 0 var(--blood); }
+    50% { text-shadow: 0 0 50px rgba(255,215,0,1), 0 0 100px rgba(255,215,0,0.6), 4px 4px 0 var(--blood); }
+  }
+
+  .title-tagline {
+    color: var(--crimson);
+    font-size: 1.2rem;
+    letter-spacing: 0.3em;
+    margin: 15px 0 40px;
+    font-weight: 600;
+  }
+
+  .btn-start {
+    background: linear-gradient(135deg, var(--blood), var(--crimson));
+    color: var(--gold);
+    border: 3px solid var(--gold);
+    padding: 18px 60px;
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    cursor: pointer;
+    text-transform: uppercase;
+    clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
+    transition: all 0.2s;
+    animation: btnGlow 1.5s ease-in-out infinite;
+  }
+
+  .btn-start:hover {
+    background: linear-gradient(135deg, var(--crimson), var(--gold));
+    color: var(--dark);
+    transform: scale(1.05);
+  }
+
+  @keyframes btnGlow {
+    0%, 100% { box-shadow: 0 0 20px rgba(220,20,60,0.5); }
+    50% { box-shadow: 0 0 40px rgba(220,20,60,0.9), 0 0 60px rgba(220,20,60,0.4); }
+  }
+
+  .floating-notes {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .note {
+    position: absolute;
+    font-size: 2rem;
+    opacity: 0;
+    animation: floatNote 6s ease-in-out infinite;
+  }
+
+  @keyframes floatNote {
+    0% { opacity: 0; transform: translateY(100vh) rotate(0deg); }
+    20% { opacity: 0.6; }
+    80% { opacity: 0.3; }
+    100% { opacity: 0; transform: translateY(-100px) rotate(360deg); }
+  }
+
+  /* ======= SELECT SCREEN ======= */
+  #select-screen {
+    flex-direction: column;
+    background: #000;
+    position: relative;
+    overflow: hidden;
+  }
+
+  #select-screen::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url('https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?w=1600&q=80');
+    filter: brightness(0.15) sepia(0.8);
+    z-index: 0;
+  }
+
+  .select-header {
+    text-align: center;
+    padding: 20px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .select-header h2 {
+    font-family: 'Cinzel Decorative', serif;
+    color: var(--gold);
+    font-size: clamp(1.2rem, 3vw, 2rem);
+    text-shadow: 0 0 20px rgba(255,215,0,0.6);
+    letter-spacing: 0.3em;
+  }
+
+  .select-instruction {
+    color: var(--parchment);
+    font-size: 0.8rem;
+    letter-spacing: 0.2em;
+    margin-top: 5px;
+    opacity: 0.7;
+  }
+
+  .fighters-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    padding: 20px 40px;
+    position: relative;
+    z-index: 2;
+    flex: 1;
+  }
+
+  .fighter-card {
+    background: linear-gradient(180deg, rgba(30,5,50,0.9), rgba(10,0,5,0.95));
+    border: 2px solid var(--dark-gold);
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+  }
+
+  .fighter-card:hover, .fighter-card.selected {
+    border-color: var(--gold);
+    box-shadow: 0 0 25px rgba(255,215,0,0.5), inset 0 0 25px rgba(255,215,0,0.1);
+    transform: scale(1.05);
+  }
+
+  .fighter-card.selected {
+    border-color: var(--crimson);
+    box-shadow: 0 0 30px rgba(220,20,60,0.7);
+  }
+
+  .fighter-card.p1-selected { border-color: #4488ff; box-shadow: 0 0 30px rgba(68,136,255,0.7); }
+  .fighter-card.p2-selected { border-color: var(--crimson); box-shadow: 0 0 30px rgba(220,20,60,0.7); }
+
+  .fighter-portrait {
+    width: 100%;
+    height: 130px;
+    object-fit: cover;
+    object-position: top;
+    filter: sepia(0.3) contrast(1.1);
+  }
+
+  .fighter-card-name {
+    color: var(--gold);
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-align: center;
+    padding: 6px 4px 2px;
+    letter-spacing: 0.05em;
+  }
+
+  .fighter-card-era {
+    color: var(--parchment);
+    font-size: 0.6rem;
+    opacity: 0.6;
+    letter-spacing: 0.1em;
+    padding-bottom: 6px;
+  }
+
+  .select-players {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 40px 15px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .player-pick {
+    text-align: center;
+    min-width: 140px;
+  }
+
+  .player-pick-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.3em;
+    margin-bottom: 8px;
+  }
+
+  .p1-label { color: #4488ff; }
+  .p2-label { color: var(--crimson); }
+
+  .player-pick-portrait {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    object-position: top;
+    border-radius: 50%;
+    border: 3px solid;
+    margin: 0 auto;
+    display: block;
+    background: rgba(255,255,255,0.05);
+  }
+
+  .p1-pick-portrait { border-color: #4488ff; }
+  .p2-pick-portrait { border-color: var(--crimson); }
+
+  .player-pick-name {
+    font-size: 0.8rem;
+    color: var(--gold);
+    margin-top: 5px;
+    min-height: 20px;
+  }
+
+  .btn-fight {
+    display: block;
+    margin: 0 auto 15px;
+    background: linear-gradient(135deg, var(--blood), #6B0000);
+    color: var(--gold);
+    border: 3px solid var(--gold);
+    padding: 14px 80px;
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 1.4rem;
+    font-weight: 900;
+    letter-spacing: 0.3em;
+    cursor: pointer;
+    position: relative;
+    z-index: 2;
+    clip-path: polygon(15px 0%, 100% 0%, calc(100% - 15px) 100%, 0% 100%);
+    transition: all 0.2s;
+    opacity: 0.4;
+    pointer-events: none;
+  }
+
+  .btn-fight.ready {
+    opacity: 1;
+    pointer-events: all;
+    animation: btnGlow 1s ease-in-out infinite;
+  }
+
+  .btn-fight:hover { transform: scale(1.05); filter: brightness(1.3); }
+
+  /* ======= GAME SCREEN ======= */
+  #game-screen {
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+  }
+
+  #arena-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+    filter: brightness(0.6) saturate(0.8);
+  }
+
+  .arena-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,0.3) 0%, transparent 30%, transparent 70%, rgba(0,0,0,0.6) 100%);
+    z-index: 1;
+  }
+
+  /* HUD */
+  .hud {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    padding: 12px 20px 6px;
+    gap: 10px;
+  }
+
+  .health-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .health-section.p2 { align-items: flex-end; }
+
+  .fighter-hud-name {
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    font-weight: 700;
+  }
+
+  .p1 .fighter-hud-name { color: #88aaff; }
+  .p2 .fighter-hud-name { color: #ff6688; }
+
+  .health-bar-container {
+    width: 100%;
+    height: 22px;
+    background: rgba(0,0,0,0.7);
+    border: 2px solid rgba(255,215,0,0.5);
+    position: relative;
+    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+  }
+
+  .p2 .health-bar-container {
+    clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+  }
+
+  .health-bar {
+    height: 100%;
+    transition: width 0.3s ease;
+    position: relative;
+  }
+
+  .p1 .health-bar { background: linear-gradient(90deg, #1a6b2a, #22cc44); float: left; }
+  .p2 .health-bar { background: linear-gradient(270deg, #6b1a1a, #cc2244); float: right; }
+
+  .hud-center {
+    text-align: center;
+    min-width: 120px;
+  }
+
+  .timer {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 2.5rem;
+    color: var(--gold);
+    text-shadow: 0 0 20px rgba(255,215,0,0.8);
+    font-weight: 900;
+    line-height: 1;
+  }
+
+  .round-display {
+    font-size: 0.6rem;
+    color: var(--parchment);
+    letter-spacing: 0.3em;
+    opacity: 0.7;
+  }
+
+  /* FIGHT AREA */
+  .fight-area {
+    position: relative;
+    z-index: 5;
+    flex: 1;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    padding: 0 60px 20px;
+  }
+
+  .fighter-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+  }
+
+  .fighter-img {
+    height: clamp(180px, 30vh, 280px);
+    width: auto;
+    object-fit: contain;
+    object-position: bottom;
+    filter: drop-shadow(0 0 20px rgba(0,0,0,0.8));
+    transition: transform 0.1s;
+    user-select: none;
+    pointer-events: none;
+  }
+
+  .fighter-wrapper.p2 .fighter-img { transform: scaleX(-1); }
+  .fighter-wrapper.p2.flipped .fighter-img { transform: scaleX(1); }
+
+  .fighter-wrapper.attack .fighter-img { filter: drop-shadow(0 0 15px rgba(255,200,0,0.9)) brightness(1.3); }
+  .fighter-wrapper.hit .fighter-img { filter: drop-shadow(0 0 20px rgba(255,0,0,0.9)) brightness(1.5) saturate(0.3); }
+  .fighter-wrapper.p1.attack .fighter-img { transform: translateX(20px); }
+
+  .fighter-shadow {
+    width: 80px;
+    height: 15px;
+    background: radial-gradient(ellipse, rgba(0,0,0,0.6) 0%, transparent 70%);
+    margin-top: -5px;
+  }
+
+  /* EFFECTS */
+  .hit-effect {
+    position: absolute;
+    font-size: 3rem;
+    font-family: 'Cinzel Decorative', serif;
+    font-weight: 900;
+    pointer-events: none;
+    animation: hitFloat 0.8s ease-out forwards;
+    z-index: 20;
+    text-shadow: 2px 2px 0 #000;
+  }
+
+  @keyframes hitFloat {
+    0% { opacity: 1; transform: translateY(0) scale(0.5); }
+    50% { opacity: 1; transform: translateY(-40px) scale(1.3); }
+    100% { opacity: 0; transform: translateY(-80px) scale(1); }
+  }
+
+  /* CONTROLS INFO */
+  .controls-display {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 20px;
+    background: rgba(0,0,0,0.7);
+    border-top: 1px solid rgba(255,215,0,0.3);
+  }
+
+  .controls-player {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+  }
+
+  .ctrl-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.65rem;
+    color: var(--parchment);
+    opacity: 0.7;
+  }
+
+  .ctrl-key {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 3px;
+    padding: 1px 5px;
+    font-weight: 700;
+    color: var(--gold);
+    font-size: 0.7rem;
+  }
+
+  /* ANNOUNCER */
+  .announcer {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 50;
+    text-align: center;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .announcer.show { opacity: 1; }
+
+  .announcer-text {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(2rem, 6vw, 5rem);
+    font-weight: 900;
+    color: var(--gold);
+    text-shadow: 4px 4px 0 var(--blood), 0 0 40px rgba(255,215,0,0.8), 0 0 80px rgba(255,215,0,0.4);
+    letter-spacing: 0.1em;
+    animation: announcerPop 0.3s ease-out;
+    white-space: nowrap;
+  }
+
+  @keyframes announcerPop {
+    0% { transform: scale(0.3) rotate(-5deg); }
+    70% { transform: scale(1.1) rotate(2deg); }
+    100% { transform: scale(1) rotate(0deg); }
+  }
+
+  .announcer-sub {
+    color: var(--crimson);
+    font-size: 1rem;
+    letter-spacing: 0.5em;
+    margin-top: 8px;
+  }
+
+  /* RESULT SCREEN */
+  #result-screen {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.9);
+    z-index: 100;
+  }
+
+  .result-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+
+  .result-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+  }
+
+  .result-winner-name {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(2rem, 5vw, 4rem);
+    color: var(--gold);
+    text-shadow: 0 0 40px rgba(255,215,0,0.8);
+    margin-bottom: 10px;
+  }
+
+  .result-subtitle {
+    color: var(--crimson);
+    font-size: 1rem;
+    letter-spacing: 0.5em;
+    margin-bottom: 30px;
+    font-weight: 600;
+  }
+
+  .result-portrait {
+    width: 180px;
+    height: 200px;
+    object-fit: cover;
+    object-position: top;
+    border: 4px solid var(--gold);
+    box-shadow: 0 0 50px rgba(255,215,0,0.5);
+    margin-bottom: 20px;
+  }
+
+  .result-quote {
+    color: var(--parchment);
+    font-style: italic;
+    font-size: 0.9rem;
+    max-width: 400px;
+    margin: 0 auto 30px;
+    opacity: 0.8;
+    line-height: 1.6;
+  }
+
+  .result-btns {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+  }
+
+  .btn-result {
+    background: linear-gradient(135deg, var(--blood), #6B0000);
+    color: var(--gold);
+    border: 2px solid var(--gold);
+    padding: 12px 35px;
+    font-family: 'Cinzel', serif;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    cursor: pointer;
+    clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+    transition: all 0.2s;
+  }
+
+  .btn-result:hover { filter: brightness(1.3); transform: scale(1.05); }
+
+  /* NOTES PARTICLES */
+  .note-particle {
+    position: absolute;
+    pointer-events: none;
+    font-size: 1.5rem;
+    z-index: 30;
+    animation: noteParticle 0.6s ease-out forwards;
+  }
+
+  @keyframes noteParticle {
+    0% { opacity: 1; transform: translate(0,0) scale(1) rotate(0deg); }
+    100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0.5) rotate(var(--dr)); }
+  }
+
+  /* Scanlines effect */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 4px);
+    pointer-events: none;
+    z-index: 999;
+  }
+</style>
+</head>
+<body>
+
+<!-- TITLE SCREEN -->
+<div id="title-screen" class="screen active">
+  <div class="floating-notes" id="floating-notes"></div>
+  <div class="title-content">
+    <p class="title-subtitle">⚔ &nbsp; O Confronto dos Maestros &nbsp; ⚔</p>
+    <h1 class="title-main">CLASSICAL<br>KOMBAT</h1>
+    <p class="title-tagline">♩ ♪ LUTE COM NOTA E FÚRIA ♪ ♩</p>
+    <button class="btn-start" onclick="goToSelect()">▶ INICIAR ◀</button>
+  </div>
+</div>
+
+<!-- SELECT SCREEN -->
+<div id="select-screen" class="screen">
+  <div class="select-header">
+    <h2>⚔ ESCOLHA SEU COMPOSITOR ⚔</h2>
+    <p class="select-instruction">J1: CLIQUE • J2: CLIQUE COM SHIFT</p>
+  </div>
+  <div class="fighters-grid" id="fighters-grid"></div>
+  <div class="select-players">
+    <div class="player-pick">
+      <p class="player-pick-label p1-label">◀ JOGADOR 1</p>
+      <img id="p1-portrait" class="player-pick-portrait p1-pick-portrait" src="" alt="">
+      <p id="p1-name" class="player-pick-name">—</p>
+    </div>
+    <div class="player-pick">
+      <p class="player-pick-label p2-label">JOGADOR 2 ▶</p>
+      <img id="p2-portrait" class="player-pick-portrait p2-pick-portrait" src="" alt="">
+      <p id="p2-name" class="player-pick-name">—</p>
+    </div>
+  </div>
+  <button class="btn-fight" id="fight-btn" onclick="startFight()">⚔ LUTAR ⚔</button>
+</div>
+
+<!-- GAME SCREEN -->
+<div id="game-screen" class="screen">
+  <img id="arena-bg" src="" alt="Arena">
+  <div class="arena-overlay"></div>
+
+  <div class="hud">
+    <div class="health-section p1">
+      <span class="fighter-hud-name p1" id="p1-hud-name">BEETHOVEN</span>
+      <div class="health-bar-container p1">
+        <div class="health-bar" id="p1-health-bar" style="width:100%"></div>
+      </div>
+    </div>
+    <div class="hud-center">
+      <div class="timer" id="timer">99</div>
+      <div class="round-display" id="round-display">ROUND 1</div>
+    </div>
+    <div class="health-section p2">
+      <span class="fighter-hud-name p2" id="p2-hud-name">VIVALDI</span>
+      <div class="health-bar-container p2">
+        <div class="health-bar" id="p2-health-bar" style="width:100%"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fight-area">
+    <div class="fighter-wrapper p1" id="p1-fighter">
+      <img class="fighter-img" id="p1-img" src="" alt="">
+      <div class="fighter-shadow"></div>
+    </div>
+    <div class="fighter-wrapper p2" id="p2-fighter">
+      <img class="fighter-img" id="p2-img" src="" alt="">
+      <div class="fighter-shadow"></div>
+    </div>
+  </div>
+
+  <div class="controls-display">
+    <div class="controls-player">
+      <span class="ctrl-btn"><span class="ctrl-key">A</span> ←</span>
+      <span class="ctrl-btn"><span class="ctrl-key">D</span> →</span>
+      <span class="ctrl-btn"><span class="ctrl-key">W</span> Pular</span>
+      <span class="ctrl-btn"><span class="ctrl-key">F</span> Soco</span>
+      <span class="ctrl-btn"><span class="ctrl-key">G</span> Chute</span>
+      <span class="ctrl-btn"><span class="ctrl-key">H</span> Especial</span>
+    </div>
+    <div class="controls-player">
+      <span class="ctrl-btn"><span class="ctrl-key">←</span> ←</span>
+      <span class="ctrl-btn"><span class="ctrl-key">→</span> →</span>
+      <span class="ctrl-btn"><span class="ctrl-key">↑</span> Pular</span>
+      <span class="ctrl-btn"><span class="ctrl-key">1</span> Soco</span>
+      <span class="ctrl-btn"><span class="ctrl-key">2</span> Chute</span>
+      <span class="ctrl-btn"><span class="ctrl-key">3</span> Especial</span>
+    </div>
+  </div>
+
+  <div class="announcer" id="announcer">
+    <div class="announcer-text" id="announcer-text"></div>
+    <div class="announcer-sub" id="announcer-sub"></div>
+  </div>
+</div>
+
+<!-- RESULT SCREEN -->
+<div id="result-screen" class="screen">
+  <div class="result-bg">
+    <img id="result-bg-img" src="" alt="" style="width:100%;height:100%;object-fit:cover;filter:brightness(0.15) sepia(0.5);">
+  </div>
+  <div class="result-content">
+    <p class="result-subtitle">♩ VITÓRIA ♩</p>
+    <img id="result-portrait" class="result-portrait" src="" alt="">
+    <h2 class="result-winner-name" id="result-name">—</h2>
+    <p class="result-quote" id="result-quote">—</p>
+    <div class="result-btns">
+      <button class="btn-result" onclick="goToSelect()">REVANCHE</button>
+      <button class="btn-result" onclick="goToTitle()">MENU</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ========================
+// FIGHTERS DATA
+// ========================
+const FIGHTERS = [
+  {
+    id: 'beethoven',
+    name: 'Beethoven',
+    era: 'Clássico • 1770-1827',
+    portrait: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Beethoven.jpg/800px-Beethoven.jpg',
+    fightImg: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Beethoven.jpg/800px-Beethoven.jpg',
+    quote: '"A música é a mediadora entre a vida espiritual e a sensual." — Beethoven',
+    special: '🎼 Sinfonia do Trovão!',
+    specialColor: '#4466ff',
+    power: 95, speed: 70, special: 90,
+  },
+  {
+    id: 'vivaldi',
+    name: 'Vivaldi',
+    era: 'Barroco • 1678-1741',
+    portrait: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Vivaldi.jpg/800px-Vivaldi.jpg',
+    fightImg: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Vivaldi.jpg/800px-Vivaldi.jpg',
+    quote: '"Toda emoção está em as Quatro Estações." — Vivaldi',
+    special: '🍂 Fúria das Quatro Estações!',
+    specialColor: '#ff9900',
+    power: 80, speed: 95, special: 85,
+  },
+  {
+    id: 'bach',
+    name: 'Bach',
+    era: 'Barroco • 1685-1750',
+    portrait: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Johann_Sebastian_Bach.jpg/800px-Johann_Sebastian_Bach.jpg',
+    fightImg: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Johann_Sebastian_Bach.jpg/800px-Johann_Sebastian_Bach.jpg',
+    quote: '"A música deve tocar o coração." — Bach',
+    special: '🎹 Fuga em Dó Menor!',
+    specialColor: '#cc44ff',
+    power: 85, speed: 75, special: 100,
+  },
+  {
+    id: 'mozart',
+    name: 'Mozart',
+    era: 'Clássico • 1756-1791',
+    portrait: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Croce-Mozart-Detail.jpg/800px-Croce-Mozart-Detail.jpg',
+    fightImg: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Croce-Mozart-Detail.jpg/800px-Croce-Mozart-Detail.jpg',
+    quote: '"Nem a dor nem o cansaço podem apagar minha felicidade." — Mozart',
+    special: '✨ Réquiem Final!',
+    specialColor: '#ffdd00',
+    power: 90, speed: 90, special: 88,
+  },
+  {
+    id: 'chopin',
+    name: 'Chopin',
+    era: 'Romântico • 1810-1849',
+    portrait: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Frederic_Chopin_photo.jpeg/800px-Frederic_Chopin_photo.jpeg',
+    fightImg: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Frederic_Chopin_photo.jpeg/800px-Frederic_Chopin_photo.jpeg',
+    quote: '"Simplicity is the final achievement." — Chopin',
+    special: '🌊 Balada do Desespero!',
+    specialColor: '#44ccff',
+    power: 75, speed: 85, special: 92,
+  },
+  {
+    id: 'handel',
+    name: 'Handel',
+    era: 'Barroco • 1685-1759',
+    portrait: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/George_Frideric_Handel_by_Balthasar_Denner.jpg/800px-George_Frideric_Handel_by_Balthasar_Denner.jpg',
+    fightImg: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/George_Frideric_Handel_by_Balthasar_Denner.jpg/800px-George_Frideric_Handel_by_Balthasar_Denner.jpg',
+    quote: '"Aleluia!" — Handel, Messias',
+    special: '👑 Marcha Real do Fogo!',
+    specialColor: '#ffaa00',
+    power: 88, speed: 72, special: 87,
+  },
+  {
+    id: 'haydn',
+    name: 'Haydn',
+    era: 'Clássico • 1732-1809',
+    portrait: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Joseph_Haydn.jpg/800px-Joseph_Haydn.jpg',
+    fightImg: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Joseph_Haydn.jpg/800px-Joseph_Haydn.jpg',
+    quote: '"Nunca me faltou criatividade." — Haydn',
+    special: '⚡ Surpresa da Sinfonia!',
+    specialColor: '#ff6600',
+    power: 82, speed: 78, special: 83,
+  },
+  {
+    id: 'schubert',
+    name: 'Schubert',
+    era: 'Romântico • 1797-1828',
+    portrait: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/Franz_Schubert_by_Wilhelm_August_Rieder_1875.jpg/800px-Franz_Schubert_by_Wilhelm_August_Rieder_1875.jpg',
+    fightImg: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/Franz_Schubert_by_Wilhelm_August_Rieder_1875.jpg/800px-Franz_Schubert_by_Wilhelm_August_Rieder_1875.jpg',
+    quote: '"A música é a melodia cujo texto é o mundo." — Schubert',
+    special: '🌙 Ave Maria Destruidora!',
+    specialColor: '#aaddff',
+    power: 78, speed: 80, special: 89,
+  },
+];
+
+const ARENAS = [
+  'https://images.unsplash.com/photo-1507838153414-b4b713384a76?w=1400&q=80',
+  'https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?w=1400&q=80',
+  'https://images.unsplash.com/photo-1520901534087-75f6b8e7d4ca?w=1400&q=80',
+  'https://images.unsplash.com/photo-1519671282429-b8f23e99db77?w=1400&q=80',
+];
+
+const HIT_WORDS = ['FORTISSIMO!','ALLEGRO!','FURIOSO!','DA CAPO!','SFORZANDO!','PRESTO!','VIVACE!','MAESTOSO!'];
+const NOTES = ['♩','♪','♫','♬','𝄞','𝄢','🎵','🎶'];
+
+// ========================
+// STATE
+// ========================
+let p1Fighter = null, p2Fighter = null;
+let p1HP = 100, p2HP = 100;
+let gameRunning = false;
+let timerVal = 99;
+let timerInterval = null;
+let aiInterval = null;
+let round = 1;
+let p1Wins = 0, p2Wins = 0;
+let p1X = 15, p2X = 65; // % positions
+let p1Cooldown = 0, p2Cooldown = 0;
+
+const keys = {};
+
+// ========================
+// TITLE SCREEN
+// ========================
+function initFloatingNotes() {
+  const container = document.getElementById('floating-notes');
+  for (let i = 0; i < 15; i++) {
+    const note = document.createElement('div');
+    note.className = 'note';
+    note.textContent = NOTES[Math.floor(Math.random() * NOTES.length)];
+    note.style.left = Math.random() * 100 + '%';
+    note.style.animationDelay = Math.random() * 6 + 's';
+    note.style.animationDuration = (4 + Math.random() * 4) + 's';
+    note.style.fontSize = (1 + Math.random() * 2) + 'rem';
+    container.appendChild(note);
+  }
+}
+
+function goToTitle() {
+  stopGame();
+  showScreen('title-screen');
+}
+
+function goToSelect() {
+  stopGame();
+  p1Fighter = null; p2Fighter = null;
+  document.getElementById('p1-portrait').src = '';
+  document.getElementById('p2-portrait').src = '';
+  document.getElementById('p1-name').textContent = '—';
+  document.getElementById('p2-name').textContent = '—';
+  document.getElementById('fight-btn').classList.remove('ready');
+  renderFighterGrid();
+  showScreen('select-screen');
+}
+
+// ========================
+// SELECT SCREEN
+// ========================
+function renderFighterGrid() {
+  const grid = document.getElementById('fighters-grid');
+  grid.innerHTML = '';
+  FIGHTERS.forEach((f, i) => {
+    const card = document.createElement('div');
+    card.className = 'fighter-card';
+    card.id = 'card-' + f.id;
+    card.innerHTML = `
+      <img class="fighter-portrait" src="${f.portrait}" alt="${f.name}" onerror="this.src='https://via.placeholder.com/200x130/1a0020/FFD700?text=${f.name}'">
+      <div class="fighter-card-name">${f.name.toUpperCase()}</div>
+      <div class="fighter-card-era">${f.era}</div>
+    `;
+    card.onclick = (e) => selectFighter(f, e.shiftKey);
+    grid.appendChild(card);
+  });
+}
+
+function selectFighter(fighter, isP2 = false) {
+  if (!isP2) {
+    // P1
+    if (p1Fighter) document.getElementById('card-' + p1Fighter.id)?.classList.remove('p1-selected');
+    p1Fighter = fighter;
+    document.getElementById('card-' + fighter.id).classList.add('p1-selected');
+    document.getElementById('p1-portrait').src = fighter.portrait;
+    document.getElementById('p1-name').textContent = fighter.name;
+  } else {
+    // P2
+    if (p2Fighter) document.getElementById('card-' + p2Fighter.id)?.classList.remove('p2-selected');
+    p2Fighter = fighter;
+    document.getElementById('card-' + fighter.id).classList.add('p2-selected');
+    document.getElementById('p2-portrait').src = fighter.portrait;
+    document.getElementById('p2-name').textContent = fighter.name;
+  }
+  if (p1Fighter && p2Fighter) {
+    document.getElementById('fight-btn').classList.add('ready');
+  }
+}
+
+// ========================
+// GAME
+// ========================
+function startFight() {
+  if (!p1Fighter || !p2Fighter) return;
+
+  p1HP = 100; p2HP = 100;
+  timerVal = 99;
+  p1X = 15; p2X = 65;
+  p1Cooldown = 0; p2Cooldown = 0;
+
+  // Setup arena
+  const arena = ARENAS[Math.floor(Math.random() * ARENAS.length)];
+  document.getElementById('arena-bg').src = arena;
+
+  // Setup fighters
+  document.getElementById('p1-img').src = p1Fighter.fightImg;
+  document.getElementById('p2-img').src = p2Fighter.fightImg;
+  document.getElementById('p1-hud-name').textContent = p1Fighter.name.toUpperCase();
+  document.getElementById('p2-hud-name').textContent = p2Fighter.name.toUpperCase();
+
+  updatePositions();
+  updateHealthBars();
+
+  document.getElementById('round-display').textContent = 'ROUND ' + round;
+
+  showScreen('game-screen');
+  gameRunning = true;
+
+  showAnnouncer('ROUND ' + round, 'LUTEM!', 1800);
+
+  // Timer
+  timerInterval = setInterval(() => {
+    if (!gameRunning) return;
+    timerVal--;
+    document.getElementById('timer').textContent = timerVal;
+    if (timerVal <= 0) endRound();
+  }, 1000);
+
+  // AI for P2
+  aiInterval = setInterval(aiTick, 500);
+
+  document.addEventListener('keydown', onKeyDown);
+  document.addEventListener('keyup', onKeyUp);
+  requestAnimationFrame(gameLoop);
+}
+
+function stopGame() {
+  gameRunning = false;
+  clearInterval(timerInterval);
+  clearInterval(aiInterval);
+  document.removeEventListener('keydown', onKeyDown);
+  document.removeEventListener('keyup', onKeyUp);
+}
+
+let lastTime = 0;
+function gameLoop(ts) {
+  if (!gameRunning) return;
+  const dt = Math.min((ts - lastTime) / 1000, 0.1);
+  lastTime = ts;
+
+  if (p1Cooldown > 0) p1Cooldown -= dt;
+  if (p2Cooldown > 0) p2Cooldown -= dt;
+
+  // P1 movement
+  const speed = 18;
+  if (keys['a'] || keys['A']) p1X = Math.max(5, p1X - speed * dt);
+  if (keys['d'] || keys['D']) p1X = Math.min(p2X - 18, p1X + speed * dt);
+
+  // Attacks
+  if ((keys['f'] || keys['F']) && p1Cooldown <= 0) { p1Cooldown = 0.5; tryAttack(1, 'punch'); }
+  if ((keys['g'] || keys['G']) && p1Cooldown <= 0) { p1Cooldown = 0.7; tryAttack(1, 'kick'); }
+  if ((keys['h'] || keys['H']) && p1Cooldown <= 0) { p1Cooldown = 1.5; tryAttack(1, 'special'); }
+
+  updatePositions();
+  requestAnimationFrame(gameLoop);
+}
+
+function onKeyDown(e) {
+  keys[e.key] = true;
+  // P2 controls
+  if (e.key === '1' && p2Cooldown <= 0) { p2Cooldown = 0.5; tryAttack(2, 'punch'); }
+  if (e.key === '2' && p2Cooldown <= 0) { p2Cooldown = 0.7; tryAttack(2, 'kick'); }
+  if (e.key === '3' && p2Cooldown <= 0) { p2Cooldown = 1.5; tryAttack(2, 'special'); }
+  if (e.key === 'ArrowLeft') p2X = Math.max(p1X + 18, p2X - 2);
+  if (e.key === 'ArrowRight') p2X = Math.min(85, p2X + 2);
+  e.preventDefault();
+}
+function onKeyUp(e) { keys[e.key] = false; }
+
+function aiTick() {
+  if (!gameRunning) return;
+  const dist = p2X - p1X;
+  const rand = Math.random();
+
+  // Move toward P1
+  if (dist > 22) p2X = Math.max(p1X + 18, p2X - 4);
+  else if (dist < 16) p2X = Math.min(85, p2X + 3);
+
+  // Attack
+  if (dist < 25 && p2Cooldown <= 0) {
+    const type = rand < 0.5 ? 'punch' : rand < 0.8 ? 'kick' : 'special';
+    p2Cooldown = type === 'special' ? 1.5 : type === 'kick' ? 0.7 : 0.5;
+    tryAttack(2, type);
+  }
+  updatePositions();
+}
+
+function updatePositions() {
+  const p1el = document.getElementById('p1-fighter');
+  const p2el = document.getElementById('p2-fighter');
+  p1el.style.position = 'absolute';
+  p1el.style.left = p1X + '%';
+  p2el.style.position = 'absolute';
+  p2el.style.left = p2X + '%';
+}
+
+function tryAttack(attacker, type) {
+  const dist = Math.abs(p2X - p1X);
+  const range = type === 'special' ? 35 : 22;
+  if (dist > range) return;
+
+  let dmg = 0;
+  const fighter = attacker === 1 ? p1Fighter : p2Fighter;
+  if (type === 'punch') dmg = 6 + Math.random() * 6;
+  if (type === 'kick') dmg = 10 + Math.random() * 8;
+  if (type === 'special') dmg = 18 + Math.random() * 12;
+
+  // Scale damage by fighter power
+  dmg *= fighter.power / 85;
+  dmg = Math.round(dmg);
+
+  const attackerEl = document.getElementById(attacker === 1 ? 'p1-fighter' : 'p2-fighter');
+  const defenderEl = document.getElementById(attacker === 1 ? 'p2-fighter' : 'p1-fighter');
+
+  attackerEl.classList.add('attack');
+  defenderEl.classList.add('hit');
+  setTimeout(() => { attackerEl.classList.remove('attack'); defenderEl.classList.remove('hit'); }, 300);
+
+  if (attacker === 1) {
+    p2HP = Math.max(0, p2HP - dmg);
+  } else {
+    p1HP = Math.max(0, p1HP - dmg);
+  }
+
+  updateHealthBars();
+  spawnHitEffect(attacker === 1 ? p2X : p1X, type, attacker);
+  spawnNoteParticles(attacker === 1 ? p2X : p1X);
+
+  if (type === 'special') {
+    showAnnouncer(fighter.special, '', 1200);
+  }
+
+  if (p1HP <= 0 || p2HP <= 0) endRound();
+}
+
+function updateHealthBars() {
+  document.getElementById('p1-health-bar').style.width = p1HP + '%';
+  document.getElementById('p2-health-bar').style.width = p2HP + '%';
+
+  // Color based on health
+  const p1bar = document.getElementById('p1-health-bar');
+  const p2bar = document.getElementById('p2-health-bar');
+  if (p1HP < 25) p1bar.style.background = 'linear-gradient(90deg, #8B0000, #ff2200)';
+  else if (p1HP < 50) p1bar.style.background = 'linear-gradient(90deg, #8B6B00, #ffaa00)';
+  if (p2HP < 25) p2bar.style.background = 'linear-gradient(270deg, #8B0000, #ff2200)';
+  else if (p2HP < 50) p2bar.style.background = 'linear-gradient(270deg, #8B6B00, #ffaa00)';
+}
+
+function spawnHitEffect(xPos, type, attacker) {
+  const gameEl = document.getElementById('game-screen');
+  const el = document.createElement('div');
+  el.className = 'hit-effect';
+  el.textContent = HIT_WORDS[Math.floor(Math.random() * HIT_WORDS.length)];
+  el.style.left = (xPos + 5) + '%';
+  el.style.top = (30 + Math.random() * 20) + '%';
+  if (type === 'special') {
+    el.style.color = (attacker === 1 ? p1Fighter : p2Fighter).specialColor;
+    el.style.fontSize = '4rem';
+  } else {
+    el.style.color = type === 'kick' ? '#ff6600' : '#ffdd00';
+  }
+  gameEl.appendChild(el);
+  setTimeout(() => el.remove(), 900);
+}
+
+function spawnNoteParticles(xPos) {
+  const gameEl = document.getElementById('game-screen');
+  for (let i = 0; i < 5; i++) {
+    const el = document.createElement('div');
+    el.className = 'note-particle';
+    el.textContent = NOTES[Math.floor(Math.random() * NOTES.length)];
+    el.style.left = (xPos + 5 + (Math.random()-0.5)*10) + '%';
+    el.style.top = (50 + Math.random() * 20) + '%';
+    el.style.setProperty('--dx', (Math.random()-0.5)*80+'px');
+    el.style.setProperty('--dy', -(30+Math.random()*60)+'px');
+    el.style.setProperty('--dr', (Math.random()-0.5)*360+'deg');
+    gameEl.appendChild(el);
+    setTimeout(() => el.remove(), 700);
+  }
+}
+
+function showAnnouncer(text, sub = '', duration = 1500) {
+  const ann = document.getElementById('announcer');
+  document.getElementById('announcer-text').textContent = text;
+  document.getElementById('announcer-sub').textContent = sub;
+  ann.classList.add('show');
+  setTimeout(() => ann.classList.remove('show'), duration);
+}
+
+function endRound() {
+  if (!gameRunning) return;
+  gameRunning = false;
+  stopGame();
+
+  let winner = null;
+  if (p1HP <= 0 && p2HP <= 0) winner = null;
+  else if (p2HP <= 0 || (timerVal <= 0 && p1HP > p2HP)) winner = 'p1';
+  else if (p1HP <= 0 || (timerVal <= 0 && p2HP > p1HP)) winner = 'p2';
+  else winner = null; // draw
+
+  if (winner === 'p1') p1Wins++;
+  else if (winner === 'p2') p2Wins++;
+
+  const winnerFighter = winner === 'p1' ? p1Fighter : winner === 'p2' ? p2Fighter : null;
+
+  setTimeout(() => {
+    if (winnerFighter) {
+      showAnnouncer('K.O.!', winnerFighter.name + ' VENCE!', 9999);
+      setTimeout(() => showResult(winnerFighter), 2000);
+    } else {
+      showAnnouncer('EMPATE!', 'AMBOS CAÍRAM!', 9999);
+      setTimeout(() => showResult(null), 2000);
+    }
+  }, 300);
+}
+
+function showResult(winnerFighter) {
+  const rPortrait = document.getElementById('result-portrait');
+  const rName = document.getElementById('result-name');
+  const rQuote = document.getElementById('result-quote');
+  const rBg = document.getElementById('result-bg-img');
+
+  if (winnerFighter) {
+    rPortrait.src = winnerFighter.portrait;
+    rName.textContent = winnerFighter.name.toUpperCase();
+    rQuote.textContent = winnerFighter.quote;
+    rBg.src = winnerFighter.portrait;
+  } else {
+    rPortrait.src = 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Beethoven.jpg/800px-Beethoven.jpg';
+    rName.textContent = 'EMPATE!';
+    rQuote.textContent = '"Até os grandes maestros às vezes caem juntos."';
+    rBg.src = ARENAS[0];
+  }
+
+  showScreen('result-screen');
+}
+
+// ========================
+// UTILS
+// ========================
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ========================
+// INIT
+// ========================
+initFloatingNotes();
+showScreen('title-screen');
+</script>
+</body>
+</html>
